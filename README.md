@@ -4,7 +4,7 @@
 [![NOVA FCT: MSc Thesis](https://img.shields.io/badge/NOVA_FCT-MSc_Thesis-blue)](docs/thesis.pdf)
 
 **Author:** [Tiago Daniel Santos Gouveia](https://www.linkedin.com/in/tsgouveia)<sup>1</sup>  
-*Advisor:* [Prof. Dr. André Dionisio Rocha](https://scholar.google.pt/citations?user=k1GIyqcAAAAJ&hl=pt-PT)<sup>1</sup> &nbsp;&nbsp;|&nbsp;&nbsp; *Co-Advisor:* [Nelson Nascimento de Freitas](https://scholar.google.com/)<sup>1</sup>
+*Advisor:* [Prof. Dr. André Dionisio Rocha](https://scholar.google.pt/citations?user=k1GIyqcAAAAJ&hl=pt-PT)<sup>1</sup> &nbsp;&nbsp;|&nbsp;&nbsp; *Co-Advisor:* [Nelson Nascimento de Freitas](https://scholar.google.com/citations?user=BDOCGnoAAAAJ)<sup>1</sup>
 
 <sup>1</sup> **NOVA School of Science and Technology**,  
 NOVA University Lisbon, 2829-516 Caparica, Portugal
