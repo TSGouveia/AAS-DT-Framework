@@ -8,7 +8,7 @@
 *Advisor:* [Prof. Dr. André Dionisio Rocha](https://scholar.google.pt/citations?user=k1GIyqcAAAAJ&hl=pt-PT)<sup>1</sup> &nbsp;&nbsp;|&nbsp;&nbsp; *Co-Advisor:* [Nelson Nascimento de Freitas](https://scholar.google.com/)<sup>1</sup>
 
 <sup>1</sup> **NOVA School of Science and Technology**,  
-and Associated Lab of Intelligent Systems (LASI), NOVA University Lisbon, 2829-516 Caparica, Portugal
+NOVA University Lisbon, 2829-516 Caparica, Portugal
 
 <table>
   <tr>
