@@ -2,9 +2,8 @@
 
 # Automatic Generation of Simulation-Based Digital Twins from Asset Administration Shells
 [![NOVA FCT: MSc Thesis](https://img.shields.io/badge/NOVA_FCT-MSc_Thesis-blue)](docs/thesis.pdf)
-![Status: Under Review](https://img.shields.io/badge/Status-Thesis_Under_Review-orange)
 
-**Author:** [Tiago Daniel Santos Gouveia](https://pt.linkedin.com/)<sup>1</sup>  
+**Author:** [Tiago Daniel Santos Gouveia](https://www.linkedin.com/in/tsgouveia)<sup>1</sup>  
 *Advisor:* [Prof. Dr. André Dionisio Rocha](https://scholar.google.pt/citations?user=k1GIyqcAAAAJ&hl=pt-PT)<sup>1</sup> &nbsp;&nbsp;|&nbsp;&nbsp; *Co-Advisor:* [Nelson Nascimento de Freitas](https://scholar.google.com/)<sup>1</sup>
 
 <sup>1</sup> **NOVA School of Science and Technology**,  
