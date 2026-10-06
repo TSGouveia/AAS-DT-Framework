@@ -1,7 +1,7 @@
 <div align="center"> 
 
 # Automatic Generation of Simulation-Based Digital Twins from Asset Administration Shells
-[![NOVA FCT: MSc Thesis](https://img.shields.io/badge/NOVA_SST-MSc_Thesis-blue)](docs/thesis.pdf)
+[![NOVA FCT: MSc Thesis](https://img.shields.io/badge/NOVA_FCT-MSc_Thesis-blue)](docs/thesis.pdf)
 ![Status: Under Review](https://img.shields.io/badge/Status-Thesis_Under_Review-orange)
 
 **Author:** [Tiago Daniel Santos Gouveia](https://pt.linkedin.com/)<sup>1</sup>  
