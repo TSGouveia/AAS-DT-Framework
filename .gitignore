@@ -1,0 +1,63 @@
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+*.VC.db
+
+# LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.glg
+*.glstex
+*.lof
+*.log
+*.lot
+*.run.xml
+*.synctex.gz
+*.toc
+*.xmpi
+.Build/
+.idea/
+AUXDIR/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+env/
+venv/
+
+# Docker runtime data
+Layer 2 - AAS Docker/influxdb/data/
+Layer 2 - AAS Docker/mosquitto/data/
+Layer 2 - AAS Docker/mosquitto/log/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vs/
+.superpowers/
+.aider*

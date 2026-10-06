@@ -1,0 +1,1611 @@
+{
+  "version": "1.0",
+  "kit_name": "FMS",
+  "aas_id": "https://acplt.org/AAS_FMS",
+  "description": "",
+  "comm_protocol": "Sockets",
+  "comm_ip": "127.0.0.1",
+  "comm_port": 5000,
+  "config_data": {
+    "kit_name": "FMS",
+    "aas_id": "FMS",
+    "description": "",
+    "dynamic": false,
+    "comm_protocol": "Sockets",
+    "comm_ip": "127.0.0.1",
+    "comm_port": 5000,
+    "pos": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rot": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "actuators": [],
+    "sensors": [],
+    "control_logic": {
+      "start": [],
+      "sequences": [
+        {
+          "name": "E->F",
+          "trigger": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "kit": "Conveyor_E",
+                "sensor": "Conveyor_E_Product",
+                "value": true
+              },
+              {
+                "kit": "Conveyor_F",
+                "sensor": "Sensor_Product",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] F->A",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] D->E",
+                "value": false
+              }
+            ]
+          },
+          "steps": [
+            {
+              "_id": "54fad1fa-33df-442c-80a2-ede0fb42df00",
+              "method": "POST",
+              "payload": "{}",
+              "type": "call_http_service",
+              "url": "192.168.10.1:80/passadeiras?skill=EF"
+            },
+            {
+              "_id": "6de18a0e-e4aa-4860-93d8-c46685af5b79",
+              "condition": {
+                "sensor": "Conveyor_E_Rotate0",
+                "value": true,
+                "kit": "Conveyor_E"
+              },
+              "then": [
+                {
+                  "_id": "390eaa52-b40b-4ddc-8c5d-d40faa687535",
+                  "actuator": "Conveyor_E_CW",
+                  "kit": "Conveyor_E",
+                  "type": "set_actuator",
+                  "value": true
+                },
+                {
+                  "_id": "773448f0-ab27-4ab3-b3af-196087481634",
+                  "condition": {
+                    "sensor": "Conveyor_E_Rotate0",
+                    "value": false,
+                    "kit": "Conveyor_E"
+                  },
+                  "timeout": 2.0,
+                  "type": "wait_until"
+                },
+                {
+                  "_id": "d69193f5-99d2-42b0-8ebe-1e28d961fe71",
+                  "actuator": "Conveyor_E_CW",
+                  "kit": "Conveyor_E",
+                  "type": "set_actuator",
+                  "value": false
+                }
+              ],
+              "type": "if"
+            },
+            {
+              "_id": "f33a5bdb-4357-44a6-bd55-35530ec3634b",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_E",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "6807a501-0c6d-48e6-8505-7a4c4fd157c4",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_F",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "1d1dc5b6-bdc6-4de5-b968-d62e1af971a1",
+              "condition": {
+                "sensor": "Sensor_Product",
+                "value": true,
+                "kit": "Conveyor_F"
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "68656aec-34e3-4aac-ad03-fa44fc2a5937",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_E",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "87b7c3e5-0977-45e9-8a7b-32e6c160ef41",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_F",
+              "type": "set_actuator",
+              "value": false
+            }
+          ]
+        },
+        {
+          "name": "F->A",
+          "trigger": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "kit": "Conveyor_F",
+                "sensor": "Sensor_Product",
+                "value": true
+              },
+              {
+                "kit": "Conveyor_A",
+                "sensor": "Sensor_Product",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] A->B",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] E->F",
+                "value": false
+              }
+            ]
+          },
+          "steps": [
+            {
+              "_id": "59e82512-4d69-438a-9fe7-5547926a54f5",
+              "method": "POST",
+              "payload": "{}",
+              "type": "call_http_service",
+              "url": "192.168.10.1:80/passadeiras?skill=FA"
+            },
+            {
+              "_id": "b20bdeef-30df-4ea7-9180-d641bdc788e0",
+              "condition": {
+                "sensor": "Sensor_Right",
+                "value": true,
+                "kit": "Conveyor_A"
+              },
+              "then": [
+                {
+                  "_id": "135ea1e2-c1fe-4c52-bc98-64b390d4bd42",
+                  "actuator": "Conveyor_A_Right",
+                  "kit": "Conveyor_A",
+                  "type": "set_actuator",
+                  "value": true
+                },
+                {
+                  "_id": "bf66909e-c6d4-45fe-98bb-489537eb983a",
+                  "condition": {
+                    "sensor": "Sensor_Right",
+                    "value": false,
+                    "kit": "Conveyor_A"
+                  },
+                  "timeout": 2.0,
+                  "type": "wait_until"
+                },
+                {
+                  "_id": "ce983673-44c9-4fe2-928e-3bdc06a2fe7b",
+                  "actuator": "Conveyor_A_Right",
+                  "kit": "Conveyor_A",
+                  "type": "set_actuator",
+                  "value": false
+                }
+              ],
+              "type": "if"
+            },
+            {
+              "_id": "f1045f75-25af-43c6-97d5-dfd57c813cb0",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_F",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "46bb0956-5db4-474c-8eac-d812101ac71d",
+              "actuator": "Conveyor_A_IN",
+              "kit": "Conveyor_A",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "f8b620ef-046e-4a7d-91b9-477321c49ed3",
+              "condition": {
+                "kit": "Conveyor_A",
+                "sensor": "Sensor_Product",
+                "value": true
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "32db4516-e063-485d-a58a-73aa2bee047b",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_F",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "f63ea13c-1e7c-4904-9620-d9bc48e74328",
+              "actuator": "Conveyor_A_IN",
+              "kit": "Conveyor_A",
+              "type": "set_actuator",
+              "value": false
+            }
+          ]
+        },
+        {
+          "name": "A->B",
+          "trigger": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "kit": "Conveyor_A",
+                "sensor": "Sensor_Product",
+                "value": true
+              },
+              {
+                "kit": "Conveyor_B",
+                "sensor": "Sensor_Product",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] B->C",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] F->A",
+                "value": false
+              }
+            ]
+          },
+          "steps": [
+            {
+              "_id": "75f75714-632b-4a18-b9f4-ece41cf52df0",
+              "method": "POST",
+              "payload": "{}",
+              "type": "call_http_service",
+              "url": "192.168.10.1:80/passadeiras?skill=AB"
+            },
+            {
+              "_id": "8b288e19-740d-4d0d-b4d6-c70f2c70ef7b",
+              "condition": {
+                "sensor": "Sensor_Left",
+                "value": true,
+                "kit": "Conveyor_A"
+              },
+              "then": [
+                {
+                  "_id": "7794cc73-652e-481d-a735-4cfa13df6d42",
+                  "actuator": "Conveyor_A_Left",
+                  "kit": "Conveyor_A",
+                  "type": "set_actuator",
+                  "value": true
+                },
+                {
+                  "_id": "56d1e685-66a1-4bd2-afc3-a50c7a9b9b11",
+                  "condition": {
+                    "sensor": "Sensor_Left",
+                    "value": false,
+                    "kit": "Conveyor_A"
+                  },
+                  "timeout": 2.0,
+                  "type": "wait_until"
+                },
+                {
+                  "_id": "463824df-e5a5-43cc-a91c-23c561430734",
+                  "actuator": "Conveyor_A_Left",
+                  "kit": "Conveyor_A",
+                  "type": "set_actuator",
+                  "value": false
+                }
+              ],
+              "type": "if"
+            },
+            {
+              "_id": "f3349d13-101d-44e6-8c10-8fbe5faa8fdd",
+              "actuator": "Conveyor_A_Out",
+              "kit": "Conveyor_A",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "5dbe4812-fce2-4893-baa5-f51d65432f27",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_B",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "0f6f801e-7ea5-47b9-bf7c-e37dabace9fa",
+              "condition": {
+                "sensor": "Sensor_Product",
+                "value": true,
+                "kit": "Conveyor_B"
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "329f23ac-2ee4-4507-a807-0260932aab9d",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_B",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "0906cc08-715f-4e05-b67b-8d5bf39ebe9e",
+              "actuator": "Conveyor_A_Out",
+              "kit": "Conveyor_A",
+              "type": "set_actuator",
+              "value": false
+            }
+          ]
+        },
+        {
+          "name": "B->C",
+          "trigger": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "kit": "Conveyor_B",
+                "sensor": "Sensor_Product",
+                "value": true
+              },
+              {
+                "kit": "Conveyor_C",
+                "sensor": "Conveyor_C_Product",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] C->D",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] A->B",
+                "value": false
+              }
+            ]
+          },
+          "steps": [
+            {
+              "_id": "813807c6-c0de-42e0-a2d4-7a4a8c30bd17",
+              "method": "POST",
+              "payload": "{}",
+              "type": "call_http_service",
+              "url": "192.168.10.1:80/passadeiras?skill=BC"
+            },
+            {
+              "_id": "bcd3d935-fb23-47cf-9155-6453b0299580",
+              "condition": {
+                "sensor": "Conveyor_C_Rotate90",
+                "value": true,
+                "kit": "Conveyor_C"
+              },
+              "then": [
+                {
+                  "_id": "542d7322-a797-4131-913a-7f9c97d10c45",
+                  "actuator": "Conveyor_C_CCW",
+                  "kit": "Conveyor_C",
+                  "type": "set_actuator",
+                  "value": true
+                },
+                {
+                  "_id": "38ce611d-d690-44c2-959e-fdae72beb4c9",
+                  "condition": {
+                    "sensor": "Conveyor_C_Rotate90",
+                    "value": false,
+                    "kit": "Conveyor_C"
+                  },
+                  "timeout": 2.0,
+                  "type": "wait_until"
+                },
+                {
+                  "_id": "3f04c009-445c-41e4-85d0-9135d26d4db6",
+                  "actuator": "Conveyor_C_CCW",
+                  "kit": "Conveyor_C",
+                  "type": "set_actuator",
+                  "value": false
+                }
+              ],
+              "type": "if"
+            },
+            {
+              "_id": "9edc543d-2760-49f8-aef7-970ca6318aa6",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_B",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "229c385e-626d-41c1-adce-57d878d0f6c5",
+              "actuator": "Move_Conveyor_IN",
+              "kit": "Conveyor_C",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "9867717e-38d6-462c-837c-e62e14ebac01",
+              "condition": {
+                "sensor": "Conveyor_C_Product",
+                "value": true,
+                "kit": "Conveyor_C"
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "18114491-7e67-431e-9567-d57f29bcbb6e",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_B",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "16f7c6dc-2448-4e07-85be-3259913c5d67",
+              "actuator": "Move_Conveyor_IN",
+              "kit": "Conveyor_C",
+              "type": "set_actuator",
+              "value": false
+            }
+          ]
+        },
+        {
+          "name": "C->D",
+          "trigger": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "kit": "Conveyor_C",
+                "sensor": "Conveyor_C_Product",
+                "value": true
+              },
+              {
+                "kit": "Conveyor_D",
+                "sensor": "Sensor_Product",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] D->E",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] B->C",
+                "value": false
+              }
+            ]
+          },
+          "steps": [
+            {
+              "_id": "1d34c856-af0e-4af8-827c-ebd62c458af2",
+              "method": "POST",
+              "payload": "{}",
+              "type": "call_http_service",
+              "url": "192.168.10.1:80/passadeiras?skill=CD"
+            },
+            {
+              "_id": "0a44d50f-4abd-4928-80c8-2351e1b601d3",
+              "condition": {
+                "kit": "Conveyor_C",
+                "sensor": "Conveyor_C_Rotate0",
+                "value": true
+              },
+              "then": [
+                {
+                  "_id": "95ad3302-7ef1-444c-a662-f4906d440eab",
+                  "actuator": "Conveyor_C_CW",
+                  "kit": "Conveyor_C",
+                  "type": "set_actuator",
+                  "value": true
+                },
+                {
+                  "_id": "3db248fd-a1ed-4a06-b9cc-af7ea4d6e747",
+                  "condition": {
+                    "kit": "Conveyor_C",
+                    "sensor": "Conveyor_C_Rotate0",
+                    "value": false
+                  },
+                  "timeout": 2.0,
+                  "type": "wait_until"
+                },
+                {
+                  "_id": "282a8922-9b18-445f-9f3d-7908cf3b0550",
+                  "actuator": "Conveyor_C_CW",
+                  "kit": "Conveyor_C",
+                  "type": "set_actuator",
+                  "value": false
+                }
+              ],
+              "type": "if"
+            },
+            {
+              "_id": "e68ebc6e-c496-49eb-8ae4-7e7fcf1db1f6",
+              "actuator": "Move_Conveyor_IN",
+              "kit": "Conveyor_C",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "a8d2620a-527b-445c-8069-e675d00651c5",
+              "actuator": "Move_Conveyor_IN",
+              "kit": "Conveyor_D",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "6639a740-93e2-4221-9734-06ce8ee2e406",
+              "condition": {
+                "kit": "Conveyor_D",
+                "sensor": "Sensor_Product",
+                "value": true
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "08cba50b-13c7-4378-a151-164eada761c1",
+              "actuator": "Move_Conveyor_IN",
+              "kit": "Conveyor_C",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "65b32bbc-e738-404b-b675-bab008c2ae54",
+              "actuator": "Move_Conveyor_IN",
+              "kit": "Conveyor_D",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "d63fd198-3bcf-4799-831a-6d9f7e0201e1",
+              "method": "POST",
+              "payload": "{}",
+              "type": "call_http_service",
+              "url": "192.168.10.1:80/estacao?skill=1"
+            },
+            {
+              "_id": "7f6e39b4-e3df-424e-87d2-d5adb694460b",
+              "actuator": "Punch_Forward",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "7ba84e45-f87c-4b18-9aec-09fd10f1c837",
+              "condition": {
+                "kit": "Punch_FMS",
+                "sensor": "Sensor_Forward",
+                "value": true
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "09f8b85f-b649-44ba-8137-02a7e7d91e99",
+              "actuator": "Punch_Forward",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "93b8ad6d-dea7-4c8f-abb7-7e00ee8aa694",
+              "actuator": "Punch_Down",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "24aed512-57ed-4345-8d5e-d400464e0f80",
+              "condition": {
+                "kit": "Punch_FMS",
+                "sensor": "Sensor_Down",
+                "value": false
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "a9fa7adb-7339-48ea-9d53-bc24acbd8644",
+              "actuator": "Punch_Down",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "59d8c454-c9d2-44ee-ab46-a6fa2f5afa7d",
+              "actuator": "Punch_Rotate",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "2ecb13c8-cc76-4a8a-a030-ceaf4c26c60c",
+              "seconds": 3.5,
+              "type": "wait_time"
+            },
+            {
+              "_id": "d2fd8a0e-b890-47ac-96b2-3296ea6e5458",
+              "actuator": "Punch_Rotate",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "44917a2a-141e-49c5-a995-ec87f1a3cdb5",
+              "actuator": "Punch_Up",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "c88a8166-5800-4fe3-aedd-5f6e343903a0",
+              "condition": {
+                "kit": "Punch_FMS",
+                "sensor": "Sensor_Up",
+                "value": false
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "57cd1371-c00d-43ab-84b4-a904968326fb",
+              "actuator": "Punch_Up",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "e75785ec-5b22-4b08-864a-2722045970cd",
+              "actuator": "Punch_Backward",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "f0f37dc6-d7e0-4452-b425-efb2397840cb",
+              "condition": {
+                "kit": "Punch_FMS",
+                "sensor": "Sensor_Backward",
+                "value": true
+              },
+              "timeout": 15.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "a57bd540-8aec-4994-812f-bf66eaf79939",
+              "actuator": "Punch_Backward",
+              "kit": "Punch_FMS",
+              "type": "set_actuator",
+              "value": false
+            }
+          ]
+        },
+        {
+          "name": "D->E",
+          "trigger": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "kit": "Conveyor_D",
+                "sensor": "Sensor_Product",
+                "value": true
+              },
+              {
+                "kit": "Conveyor_E",
+                "sensor": "Conveyor_E_Product",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] E->F",
+                "value": false
+              },
+              {
+                "kit": "",
+                "sensor": "[Rule] C->D",
+                "value": false
+              }
+            ]
+          },
+          "steps": [
+            {
+              "_id": "d3058fce-8f03-446b-9086-b66ae977d932",
+              "method": "POST",
+              "payload": "{}",
+              "type": "call_http_service",
+              "url": "192.168.10.1:80/passadeiras?skill=DE"
+            },
+            {
+              "_id": "8d2c6cee-b095-4a39-a7d1-bf43f7837de9",
+              "condition": {
+                "sensor": "Conveyor_E_Rotate90",
+                "value": true,
+                "kit": "Conveyor_E"
+              },
+              "then": [
+                {
+                  "_id": "bd2e5465-9b4f-422c-a34e-04f12a06e159",
+                  "actuator": "Conveyor_E_CCW",
+                  "kit": "Conveyor_E",
+                  "type": "set_actuator",
+                  "value": true
+                },
+                {
+                  "_id": "48129cd4-edc2-4484-932f-de298db12d87",
+                  "condition": {
+                    "sensor": "Conveyor_E_Rotate90",
+                    "value": false,
+                    "kit": "Conveyor_E"
+                  },
+                  "timeout": 2.0,
+                  "type": "wait_until"
+                },
+                {
+                  "_id": "d719d458-8a4c-47e0-995b-548de4414c63",
+                  "actuator": "Conveyor_E_CCW",
+                  "kit": "Conveyor_E",
+                  "type": "set_actuator",
+                  "value": false
+                }
+              ],
+              "type": "if"
+            },
+            {
+              "_id": "aa7e7b7b-3f2e-4a38-b23e-5baebef82530",
+              "actuator": "Move_Conveyor_IN",
+              "kit": "Conveyor_D",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "d587e7a9-19af-45b9-b6dd-6b2065855a2a",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_E",
+              "type": "set_actuator",
+              "value": true
+            },
+            {
+              "_id": "cadec55d-4a04-4d51-ad81-2e1507f04490",
+              "condition": {
+                "sensor": "Conveyor_E_Product",
+                "value": true,
+                "kit": "Conveyor_E"
+              },
+              "timeout": 2.0,
+              "type": "wait_until"
+            },
+            {
+              "_id": "bf456835-62e3-4502-a60c-31a92d75820e",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_D",
+              "type": "set_actuator",
+              "value": false
+            },
+            {
+              "_id": "40907784-ebc6-41e4-af88-cecefd5d223e",
+              "actuator": "Move_Conveyor_OUT",
+              "kit": "Conveyor_E",
+              "type": "set_actuator",
+              "value": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "glb_filename": "FMS.glb",
+  "glb_base64": "",
+  "control_logic": {
+    "start": [],
+    "sequences": [
+      {
+        "name": "E->F",
+        "trigger": {
+          "operator": "AND",
+          "conditions": [
+            {
+              "kit": "Conveyor_E",
+              "sensor": "Conveyor_E_Product",
+              "value": true
+            },
+            {
+              "kit": "Conveyor_F",
+              "sensor": "Sensor_Product",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] F->A",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] D->E",
+              "value": false
+            }
+          ]
+        },
+        "steps": [
+          {
+            "_id": "54fad1fa-33df-442c-80a2-ede0fb42df00",
+            "method": "POST",
+            "payload": "{}",
+            "type": "call_http_service",
+            "url": "192.168.10.1:80/passadeiras?skill=EF"
+          },
+          {
+            "_id": "6de18a0e-e4aa-4860-93d8-c46685af5b79",
+            "condition": {
+              "sensor": "Conveyor_E_Rotate0",
+              "value": true,
+              "kit": "Conveyor_E"
+            },
+            "then": [
+              {
+                "_id": "390eaa52-b40b-4ddc-8c5d-d40faa687535",
+                "actuator": "Conveyor_E_CW",
+                "kit": "Conveyor_E",
+                "type": "set_actuator",
+                "value": true
+              },
+              {
+                "_id": "773448f0-ab27-4ab3-b3af-196087481634",
+                "condition": {
+                  "sensor": "Conveyor_E_Rotate0",
+                  "value": false,
+                  "kit": "Conveyor_E"
+                },
+                "timeout": 2.0,
+                "type": "wait_until"
+              },
+              {
+                "_id": "d69193f5-99d2-42b0-8ebe-1e28d961fe71",
+                "actuator": "Conveyor_E_CW",
+                "kit": "Conveyor_E",
+                "type": "set_actuator",
+                "value": false
+              }
+            ],
+            "type": "if"
+          },
+          {
+            "_id": "f33a5bdb-4357-44a6-bd55-35530ec3634b",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_E",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "6807a501-0c6d-48e6-8505-7a4c4fd157c4",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_F",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "1d1dc5b6-bdc6-4de5-b968-d62e1af971a1",
+            "condition": {
+              "sensor": "Sensor_Product",
+              "value": true,
+              "kit": "Conveyor_F"
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "68656aec-34e3-4aac-ad03-fa44fc2a5937",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_E",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "87b7c3e5-0977-45e9-8a7b-32e6c160ef41",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_F",
+            "type": "set_actuator",
+            "value": false
+          }
+        ]
+      },
+      {
+        "name": "F->A",
+        "trigger": {
+          "operator": "AND",
+          "conditions": [
+            {
+              "kit": "Conveyor_F",
+              "sensor": "Sensor_Product",
+              "value": true
+            },
+            {
+              "kit": "Conveyor_A",
+              "sensor": "Sensor_Product",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] A->B",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] E->F",
+              "value": false
+            }
+          ]
+        },
+        "steps": [
+          {
+            "_id": "59e82512-4d69-438a-9fe7-5547926a54f5",
+            "method": "POST",
+            "payload": "{}",
+            "type": "call_http_service",
+            "url": "192.168.10.1:80/passadeiras?skill=FA"
+          },
+          {
+            "_id": "b20bdeef-30df-4ea7-9180-d641bdc788e0",
+            "condition": {
+              "sensor": "Sensor_Right",
+              "value": true,
+              "kit": "Conveyor_A"
+            },
+            "then": [
+              {
+                "_id": "135ea1e2-c1fe-4c52-bc98-64b390d4bd42",
+                "actuator": "Conveyor_A_Right",
+                "kit": "Conveyor_A",
+                "type": "set_actuator",
+                "value": true
+              },
+              {
+                "_id": "bf66909e-c6d4-45fe-98bb-489537eb983a",
+                "condition": {
+                  "sensor": "Sensor_Right",
+                  "value": false,
+                  "kit": "Conveyor_A"
+                },
+                "timeout": 2.0,
+                "type": "wait_until"
+              },
+              {
+                "_id": "ce983673-44c9-4fe2-928e-3bdc06a2fe7b",
+                "actuator": "Conveyor_A_Right",
+                "kit": "Conveyor_A",
+                "type": "set_actuator",
+                "value": false
+              }
+            ],
+            "type": "if"
+          },
+          {
+            "_id": "f1045f75-25af-43c6-97d5-dfd57c813cb0",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_F",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "46bb0956-5db4-474c-8eac-d812101ac71d",
+            "actuator": "Conveyor_A_IN",
+            "kit": "Conveyor_A",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "f8b620ef-046e-4a7d-91b9-477321c49ed3",
+            "condition": {
+              "kit": "Conveyor_A",
+              "sensor": "Sensor_Product",
+              "value": true
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "32db4516-e063-485d-a58a-73aa2bee047b",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_F",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "f63ea13c-1e7c-4904-9620-d9bc48e74328",
+            "actuator": "Conveyor_A_IN",
+            "kit": "Conveyor_A",
+            "type": "set_actuator",
+            "value": false
+          }
+        ]
+      },
+      {
+        "name": "A->B",
+        "trigger": {
+          "operator": "AND",
+          "conditions": [
+            {
+              "kit": "Conveyor_A",
+              "sensor": "Sensor_Product",
+              "value": true
+            },
+            {
+              "kit": "Conveyor_B",
+              "sensor": "Sensor_Product",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] B->C",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] F->A",
+              "value": false
+            }
+          ]
+        },
+        "steps": [
+          {
+            "_id": "75f75714-632b-4a18-b9f4-ece41cf52df0",
+            "method": "POST",
+            "payload": "{}",
+            "type": "call_http_service",
+            "url": "192.168.10.1:80/passadeiras?skill=AB"
+          },
+          {
+            "_id": "8b288e19-740d-4d0d-b4d6-c70f2c70ef7b",
+            "condition": {
+              "sensor": "Sensor_Left",
+              "value": true,
+              "kit": "Conveyor_A"
+            },
+            "then": [
+              {
+                "_id": "7794cc73-652e-481d-a735-4cfa13df6d42",
+                "actuator": "Conveyor_A_Left",
+                "kit": "Conveyor_A",
+                "type": "set_actuator",
+                "value": true
+              },
+              {
+                "_id": "56d1e685-66a1-4bd2-afc3-a50c7a9b9b11",
+                "condition": {
+                  "sensor": "Sensor_Left",
+                  "value": false,
+                  "kit": "Conveyor_A"
+                },
+                "timeout": 2.0,
+                "type": "wait_until"
+              },
+              {
+                "_id": "463824df-e5a5-43cc-a91c-23c561430734",
+                "actuator": "Conveyor_A_Left",
+                "kit": "Conveyor_A",
+                "type": "set_actuator",
+                "value": false
+              }
+            ],
+            "type": "if"
+          },
+          {
+            "_id": "f3349d13-101d-44e6-8c10-8fbe5faa8fdd",
+            "actuator": "Conveyor_A_Out",
+            "kit": "Conveyor_A",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "5dbe4812-fce2-4893-baa5-f51d65432f27",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_B",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "0f6f801e-7ea5-47b9-bf7c-e37dabace9fa",
+            "condition": {
+              "sensor": "Sensor_Product",
+              "value": true,
+              "kit": "Conveyor_B"
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "329f23ac-2ee4-4507-a807-0260932aab9d",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_B",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "0906cc08-715f-4e05-b67b-8d5bf39ebe9e",
+            "actuator": "Conveyor_A_Out",
+            "kit": "Conveyor_A",
+            "type": "set_actuator",
+            "value": false
+          }
+        ]
+      },
+      {
+        "name": "B->C",
+        "trigger": {
+          "operator": "AND",
+          "conditions": [
+            {
+              "kit": "Conveyor_B",
+              "sensor": "Sensor_Product",
+              "value": true
+            },
+            {
+              "kit": "Conveyor_C",
+              "sensor": "Conveyor_C_Product",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] C->D",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] A->B",
+              "value": false
+            }
+          ]
+        },
+        "steps": [
+          {
+            "_id": "813807c6-c0de-42e0-a2d4-7a4a8c30bd17",
+            "method": "POST",
+            "payload": "{}",
+            "type": "call_http_service",
+            "url": "192.168.10.1:80/passadeiras?skill=BC"
+          },
+          {
+            "_id": "bcd3d935-fb23-47cf-9155-6453b0299580",
+            "condition": {
+              "sensor": "Conveyor_C_Rotate90",
+              "value": true,
+              "kit": "Conveyor_C"
+            },
+            "then": [
+              {
+                "_id": "542d7322-a797-4131-913a-7f9c97d10c45",
+                "actuator": "Conveyor_C_CCW",
+                "kit": "Conveyor_C",
+                "type": "set_actuator",
+                "value": true
+              },
+              {
+                "_id": "38ce611d-d690-44c2-959e-fdae72beb4c9",
+                "condition": {
+                  "sensor": "Conveyor_C_Rotate90",
+                  "value": false,
+                  "kit": "Conveyor_C"
+                },
+                "timeout": 2.0,
+                "type": "wait_until"
+              },
+              {
+                "_id": "3f04c009-445c-41e4-85d0-9135d26d4db6",
+                "actuator": "Conveyor_C_CCW",
+                "kit": "Conveyor_C",
+                "type": "set_actuator",
+                "value": false
+              }
+            ],
+            "type": "if"
+          },
+          {
+            "_id": "9edc543d-2760-49f8-aef7-970ca6318aa6",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_B",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "229c385e-626d-41c1-adce-57d878d0f6c5",
+            "actuator": "Move_Conveyor_IN",
+            "kit": "Conveyor_C",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "9867717e-38d6-462c-837c-e62e14ebac01",
+            "condition": {
+              "sensor": "Conveyor_C_Product",
+              "value": true,
+              "kit": "Conveyor_C"
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "18114491-7e67-431e-9567-d57f29bcbb6e",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_B",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "16f7c6dc-2448-4e07-85be-3259913c5d67",
+            "actuator": "Move_Conveyor_IN",
+            "kit": "Conveyor_C",
+            "type": "set_actuator",
+            "value": false
+          }
+        ]
+      },
+      {
+        "name": "C->D",
+        "trigger": {
+          "operator": "AND",
+          "conditions": [
+            {
+              "kit": "Conveyor_C",
+              "sensor": "Conveyor_C_Product",
+              "value": true
+            },
+            {
+              "kit": "Conveyor_D",
+              "sensor": "Sensor_Product",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] D->E",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] B->C",
+              "value": false
+            }
+          ]
+        },
+        "steps": [
+          {
+            "_id": "1d34c856-af0e-4af8-827c-ebd62c458af2",
+            "method": "POST",
+            "payload": "{}",
+            "type": "call_http_service",
+            "url": "192.168.10.1:80/passadeiras?skill=CD"
+          },
+          {
+            "_id": "0a44d50f-4abd-4928-80c8-2351e1b601d3",
+            "condition": {
+              "kit": "Conveyor_C",
+              "sensor": "Conveyor_C_Rotate0",
+              "value": true
+            },
+            "then": [
+              {
+                "_id": "95ad3302-7ef1-444c-a662-f4906d440eab",
+                "actuator": "Conveyor_C_CW",
+                "kit": "Conveyor_C",
+                "type": "set_actuator",
+                "value": true
+              },
+              {
+                "_id": "3db248fd-a1ed-4a06-b9cc-af7ea4d6e747",
+                "condition": {
+                  "kit": "Conveyor_C",
+                  "sensor": "Conveyor_C_Rotate0",
+                  "value": false
+                },
+                "timeout": 2.0,
+                "type": "wait_until"
+              },
+              {
+                "_id": "282a8922-9b18-445f-9f3d-7908cf3b0550",
+                "actuator": "Conveyor_C_CW",
+                "kit": "Conveyor_C",
+                "type": "set_actuator",
+                "value": false
+              }
+            ],
+            "type": "if"
+          },
+          {
+            "_id": "e68ebc6e-c496-49eb-8ae4-7e7fcf1db1f6",
+            "actuator": "Move_Conveyor_IN",
+            "kit": "Conveyor_C",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "a8d2620a-527b-445c-8069-e675d00651c5",
+            "actuator": "Move_Conveyor_IN",
+            "kit": "Conveyor_D",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "6639a740-93e2-4221-9734-06ce8ee2e406",
+            "condition": {
+              "kit": "Conveyor_D",
+              "sensor": "Sensor_Product",
+              "value": true
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "08cba50b-13c7-4378-a151-164eada761c1",
+            "actuator": "Move_Conveyor_IN",
+            "kit": "Conveyor_C",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "65b32bbc-e738-404b-b675-bab008c2ae54",
+            "actuator": "Move_Conveyor_IN",
+            "kit": "Conveyor_D",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "d63fd198-3bcf-4799-831a-6d9f7e0201e1",
+            "method": "POST",
+            "payload": "{}",
+            "type": "call_http_service",
+            "url": "192.168.10.1:80/estacao?skill=1"
+          },
+          {
+            "_id": "7f6e39b4-e3df-424e-87d2-d5adb694460b",
+            "actuator": "Punch_Forward",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "7ba84e45-f87c-4b18-9aec-09fd10f1c837",
+            "condition": {
+              "kit": "Punch_FMS",
+              "sensor": "Sensor_Forward",
+              "value": true
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "09f8b85f-b649-44ba-8137-02a7e7d91e99",
+            "actuator": "Punch_Forward",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "93b8ad6d-dea7-4c8f-abb7-7e00ee8aa694",
+            "actuator": "Punch_Down",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "24aed512-57ed-4345-8d5e-d400464e0f80",
+            "condition": {
+              "kit": "Punch_FMS",
+              "sensor": "Sensor_Down",
+              "value": false
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "a9fa7adb-7339-48ea-9d53-bc24acbd8644",
+            "actuator": "Punch_Down",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "59d8c454-c9d2-44ee-ab46-a6fa2f5afa7d",
+            "actuator": "Punch_Rotate",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "2ecb13c8-cc76-4a8a-a030-ceaf4c26c60c",
+            "seconds": 3.5,
+            "type": "wait_time"
+          },
+          {
+            "_id": "d2fd8a0e-b890-47ac-96b2-3296ea6e5458",
+            "actuator": "Punch_Rotate",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "44917a2a-141e-49c5-a995-ec87f1a3cdb5",
+            "actuator": "Punch_Up",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "c88a8166-5800-4fe3-aedd-5f6e343903a0",
+            "condition": {
+              "kit": "Punch_FMS",
+              "sensor": "Sensor_Up",
+              "value": false
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "57cd1371-c00d-43ab-84b4-a904968326fb",
+            "actuator": "Punch_Up",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "e75785ec-5b22-4b08-864a-2722045970cd",
+            "actuator": "Punch_Backward",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "f0f37dc6-d7e0-4452-b425-efb2397840cb",
+            "condition": {
+              "kit": "Punch_FMS",
+              "sensor": "Sensor_Backward",
+              "value": true
+            },
+            "timeout": 15.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "a57bd540-8aec-4994-812f-bf66eaf79939",
+            "actuator": "Punch_Backward",
+            "kit": "Punch_FMS",
+            "type": "set_actuator",
+            "value": false
+          }
+        ]
+      },
+      {
+        "name": "D->E",
+        "trigger": {
+          "operator": "AND",
+          "conditions": [
+            {
+              "kit": "Conveyor_D",
+              "sensor": "Sensor_Product",
+              "value": true
+            },
+            {
+              "kit": "Conveyor_E",
+              "sensor": "Conveyor_E_Product",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] E->F",
+              "value": false
+            },
+            {
+              "kit": "",
+              "sensor": "[Rule] C->D",
+              "value": false
+            }
+          ]
+        },
+        "steps": [
+          {
+            "_id": "d3058fce-8f03-446b-9086-b66ae977d932",
+            "method": "POST",
+            "payload": "{}",
+            "type": "call_http_service",
+            "url": "192.168.10.1:80/passadeiras?skill=DE"
+          },
+          {
+            "_id": "8d2c6cee-b095-4a39-a7d1-bf43f7837de9",
+            "condition": {
+              "sensor": "Conveyor_E_Rotate90",
+              "value": true,
+              "kit": "Conveyor_E"
+            },
+            "then": [
+              {
+                "_id": "bd2e5465-9b4f-422c-a34e-04f12a06e159",
+                "actuator": "Conveyor_E_CCW",
+                "kit": "Conveyor_E",
+                "type": "set_actuator",
+                "value": true
+              },
+              {
+                "_id": "48129cd4-edc2-4484-932f-de298db12d87",
+                "condition": {
+                  "sensor": "Conveyor_E_Rotate90",
+                  "value": false,
+                  "kit": "Conveyor_E"
+                },
+                "timeout": 2.0,
+                "type": "wait_until"
+              },
+              {
+                "_id": "d719d458-8a4c-47e0-995b-548de4414c63",
+                "actuator": "Conveyor_E_CCW",
+                "kit": "Conveyor_E",
+                "type": "set_actuator",
+                "value": false
+              }
+            ],
+            "type": "if"
+          },
+          {
+            "_id": "aa7e7b7b-3f2e-4a38-b23e-5baebef82530",
+            "actuator": "Move_Conveyor_IN",
+            "kit": "Conveyor_D",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "d587e7a9-19af-45b9-b6dd-6b2065855a2a",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_E",
+            "type": "set_actuator",
+            "value": true
+          },
+          {
+            "_id": "cadec55d-4a04-4d51-ad81-2e1507f04490",
+            "condition": {
+              "sensor": "Conveyor_E_Product",
+              "value": true,
+              "kit": "Conveyor_E"
+            },
+            "timeout": 2.0,
+            "type": "wait_until"
+          },
+          {
+            "_id": "bf456835-62e3-4502-a60c-31a92d75820e",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_D",
+            "type": "set_actuator",
+            "value": false
+          },
+          {
+            "_id": "40907784-ebc6-41e4-af88-cecefd5d223e",
+            "actuator": "Move_Conveyor_OUT",
+            "kit": "Conveyor_E",
+            "type": "set_actuator",
+            "value": false
+          }
+        ]
+      }
+    ]
+  }
+}
