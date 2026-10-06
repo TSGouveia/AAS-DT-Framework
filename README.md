@@ -1,7 +1,7 @@
 <div align="center"> 
 
 # Automatic Generation of Simulation-Based Digital Twins from Asset Administration Shells
-[![NOVA SST: MSc Thesis](https://img.shields.io/badge/NOVA_SST-MSc_Thesis-blue)](docs/thesis.pdf)
+[![NOVA FCT: MSc Thesis](https://img.shields.io/badge/NOVA_SST-MSc_Thesis-blue)](docs/thesis.pdf)
 ![Status: Under Review](https://img.shields.io/badge/Status-Thesis_Under_Review-orange)
 
 **Author:** [Tiago Daniel Santos Gouveia](https://pt.linkedin.com/)<sup>1</sup>  
@@ -125,11 +125,3 @@ Empirical evaluation on the physical modular FMS bench and 800 parametric stress
 ## <div align="center">Citation</div>
 
 > ℹ️ **Publication Note:** This Master's dissertation is currently undergoing academic defense and review at NOVA School of Science and Technology (NOVA FCT). The official publication link, permanent handle, and BibTeX citation from **RUN (Repositório da Universidade NOVA)** will be made available here upon public release.
-
----
-
-## <div align="center">Contacts</div>
-
-For academic inquiries, collaborations, or questions regarding this framework, please contact:
-- **NOVA RICS Open Lab:** [novaricsopenlab@gmail.com](mailto:novaricsopenlab@gmail.com)
-- **UNINOVA-CTS / LASI:** NOVA School of Science and Technology, NOVA University Lisbon, Portugal
