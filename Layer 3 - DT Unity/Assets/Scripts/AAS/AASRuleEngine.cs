@@ -285,7 +285,7 @@ public class AASRuleEngine : MonoBehaviour
                          
                          if (dtMode)
                          {
-                             if (condReal)
+                             if (condReal || condSim)
                              {
                                  // Immediate Sync Snap to keep simulator in sync with real hardware
                                  string sensorName = condToken["sensor"]?.ToString();

@@ -94,7 +94,8 @@ public class AASSensorController : MonoBehaviour
         {
             if (kvp.Value.pinId == pinId)
             {
-                state = useReal ? kvp.Value.realState : kvp.Value.lastState;
+                var b = kvp.Value;
+                state = useReal ? (b.activeLow ? !b.realState : b.realState) : b.lastState;
                 return true;
             }
         }
@@ -241,15 +242,11 @@ public class AASSensorController : MonoBehaviour
                             {
                                 if (!isStabilized) return;
                                 
-                                // Only push virtual physics states to AAS if NOT in Digital Twin mode.
-                                // In DT mode, the real physical PLC updates the AAS.
-                                if (OperationModeManager.Current != OperationMode.DigitalTwin)
-                                {
-                                    StartCoroutine(UpdateAASPin(binding, state, isOverlapping, sensorObj, productObj));
-                                }
+                                // In both VC and DT mode runtime, the Unity virtual physics sensors drive the local simulation and snap
+                                StartCoroutine(UpdateAASPin(binding, state, isOverlapping, sensorObj, productObj));
                                 
-                                // Trigger move-on-state if configured (only in non-DT modes, since DT handles this via hardware events)
-                                if (OperationModeManager.Current != OperationMode.DigitalTwin && binding.hasMoveConfig && state == binding.moveOnState.Value)
+                                // Trigger move-on-state if configured (only in VC mode)
+                                if (OperationModeManager.Current != OperationMode.DigitalTwin && binding.hasMoveConfig && binding.moveOnState.HasValue && state == binding.moveOnState.Value)
                                 {
                                     if (binding.activeMoveCoroutine != null) StopCoroutine(binding.activeMoveCoroutine);
                                     binding.activeMoveCoroutine = StartCoroutine(ExecuteMoveRoutine(binding));
@@ -345,13 +342,6 @@ public class AASSensorController : MonoBehaviour
     // -----------------------------------------------------------------------
     private void StartDTConnection()
     {
-        if (OperationModeManager.Current == OperationMode.DigitalTwin && !BaSyxManager.IsStartupComplete)
-        {
-            Debug.Log($"[Sensor] ⏳ DT Connection for '{gameObject.name}' delayed until BaSyxManager startup is complete.");
-            StartCoroutine(WaitAndStartDTConnection());
-            return;
-        }
-
         string proto = (_kitProtocol ?? "tcp").ToLower().Trim();
         if (proto != "tcp" && proto != "socket" && proto != "sockets" && proto != "none")
         {
@@ -425,15 +415,70 @@ public class AASSensorController : MonoBehaviour
     private void OnArduinoPortChanged(SensorBinding binding, bool value)
     {
         if (!_dtActive) return;
-        bool isFirstSync = _syncedPorts.Add(binding.realPortId);
-        if (value != binding.realState || isFirstSync)
-        {
-            binding.realState = value;
-            OnDTSensorStateChanged(binding, value);
-        }
+        binding.realState = value;
+        OnDTSensorStateChanged(binding, value);
     }
 
+    /// <summary>
+    /// Performs initial calibration for this kit based on real hardware port readings from AASArduinoLink.
+    /// Aligns kinematic assemblies (rotators, punch carriage) and snaps workpieces to active physical sensors.
+    /// </summary>
+    public void PerformInitialCalibration()
+    {
+        if (AASArduinoLink.Instance == null) return;
 
+        Debug.Log($"[Sensor] 🎯 Executing Initial Calibration for '{gameObject.name}' ({_portIdToBinding.Count} DT port bindings)");
+
+        foreach (var kvp in _portIdToBinding)
+        {
+            var binding = kvp.Value;
+            if (string.IsNullOrEmpty(binding.realPortId)) continue;
+
+            if (AASArduinoLink.Instance.TryGetLastKnownState(binding.realPortId, out bool rawVal))
+            {
+                binding.realState = rawVal;
+                bool sensorActive = binding.activeLow ? !rawVal : rawVal;
+                binding.lastState = sensorActive;
+
+                Debug.Log($"[Sensor] 🎯 Initial state for '{binding.pinId}' (Port '{binding.realPortId}'): Raw={rawVal}, ActiveLow={binding.activeLow} -> SensorActive={sensorActive}");
+
+                // 1. Kinematic / MoveOnState initial positioning
+                // Only calibrate/align the kinematic component if the physical sensor is ACTUALLY active (triggered)
+                if (sensorActive && binding.hasMoveConfig)
+                {
+                    GameObject targetObj = FindTargetComponent(_componentMap, binding.moveTargetName);
+                    if (targetObj != null)
+                    {
+                        bool doPosition = binding.moveMode != "Rotation";
+                        bool doRotation = binding.moveMode != "Position";
+                        if (doPosition) targetObj.transform.localPosition = binding.moveTargetLocalPos;
+                        if (doRotation) targetObj.transform.localRotation = Quaternion.Euler(binding.moveTargetLocalRot);
+                        Physics.SyncTransforms();
+                        Debug.Log($"[Sensor] 🎯 Kinematics Calibrated: '{binding.moveTargetName}' on '{gameObject.name}' -> Pos={binding.moveTargetLocalPos}, Rot={binding.moveTargetLocalRot}");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[Sensor] ⚠️ Kinematics Calibrate: target '{binding.moveTargetName}' not found on '{gameObject.name}'");
+                    }
+                }
+
+                // 2. Workpiece position calibration (Snap)
+                if (sensorActive && binding.hasSnap)
+                {
+                    GameObject sensorObj = FindTargetComponent(_componentMap, binding.componentName);
+                    binding.lastSnapTime = Time.time;
+                    StartCoroutine(DTSnapWithDelayRoutine(binding, sensorObj));
+                }
+
+                // 3. Update AAS Submodel pin value so AAS matches physical hardware state
+                StartCoroutine(UpdateAASPin(binding, sensorActive, isOverlapping: sensorActive, sensorObj: null, productObj: null));
+            }
+            else
+            {
+                Debug.LogWarning($"[Sensor] ⚠️ Port '{binding.realPortId}' for '{binding.pinId}' on '{gameObject.name}' not yet received from M-Duino at calibration time!");
+            }
+        }
+    }
 
     // Called on the main Unity thread when a real sensor changes state in DT mode.
     // Triggers the same visual behaviours as VC mode but does NOT write to AAS
@@ -443,21 +488,8 @@ public class AASSensorController : MonoBehaviour
         bool sensorActive = binding.activeLow ? !state : state;
         Debug.Log($"[DT-LOG] 📡 OnDTSensorStateChanged called for realPortId='{binding.realPortId}', pinId='{binding.pinId}'. state={state}, activeLow={binding.activeLow} -> sensorActive={sensorActive}");
 
-        // --- MOVE CONFIG LOGIC ---
-        if (binding.hasMoveConfig && binding.moveOnState.HasValue && state == binding.moveOnState.Value)
-        {
-            Debug.Log($"[DT-LOG] 🔀 Starting ExecuteMoveRoutine for targetName='{binding.moveTargetName}'");
-            if (binding.activeMoveCoroutine != null) StopCoroutine(binding.activeMoveCoroutine);
-            binding.activeMoveCoroutine = StartCoroutine(ExecuteMoveRoutine(binding));
-        }
-
-        // --- DT SNAP LOGIC ---
-        if (sensorActive && binding.hasSnap && (Time.time - binding.lastSnapTime > 1.5f))
-        {
-            binding.lastSnapTime = Time.time;
-            GameObject sensorObj = FindTargetComponent(_componentMap, binding.componentName);
-            StartCoroutine(DTSnapWithDelayRoutine(binding, sensorObj));
-        }
+        // In DT runtime, the Unity virtual physics sensors drive the local simulation and snaps.
+        // We log the real hardware event and update binding.realState, but do not trigger conflicting snaps/moves during runtime.
     }
 
     private IEnumerator DTSnapWithDelayRoutine(SensorBinding binding, GameObject sensorObj)
@@ -499,7 +531,34 @@ public class AASSensorController : MonoBehaviour
  
         if (targetRb == null)
         {
-            Debug.LogWarning($"[DT-LOG] ⚠️ Snap: no dynamic product found in scene with 'DynamicProduct' component.");
+            var prodConfigs = FindObjectsByType<AASProductConfig>(FindObjectsSortMode.None);
+            foreach (var pc in prodConfigs)
+            {
+                var rb = pc.GetComponentInParent<Rigidbody>() ?? pc.GetComponent<Rigidbody>();
+                if (rb != null)
+                {
+                    float d = Vector3.Distance(rb.position, sensorTrans.position);
+                    if (d < minDist)
+                    {
+                        minDist = d;
+                        targetRb = rb;
+                    }
+                }
+            }
+        }
+
+        if (targetRb == null)
+        {
+            var prod = GameObject.Find("Product1");
+            if (prod != null)
+            {
+                targetRb = prod.GetComponentInParent<Rigidbody>() ?? prod.GetComponent<Rigidbody>();
+            }
+        }
+
+        if (targetRb == null)
+        {
+            Debug.LogWarning($"[DT-LOG] ⚠️ Snap: no dynamic product found in scene with 'DynamicProduct' or 'AASProductConfig' component.");
             yield break;
         }
 

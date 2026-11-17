@@ -1107,7 +1107,7 @@ class ConveyorWizard(QMainWindow):
         self.splitter = QSplitter(Qt.Orientation.Horizontal)
         
         self.wizard_panel = QWidget(); self.wizard_panel.setMinimumWidth(400); self.wizard_layout = QVBoxLayout(self.wizard_panel)
-        self.step_label = QLabel("Step 1 of 6: Model Selection"); self.step_label.setStyleSheet("font-size: 20px; color: #007acc; margin-bottom: 5px;")
+        self.step_label = QLabel("Step 1 of 5: Model Selection"); self.step_label.setStyleSheet("font-size: 20px; color: #007acc; margin-bottom: 5px;")
         self.wizard_layout.addWidget(self.step_label); self.stack = QStackedWidget(); self.wizard_layout.addWidget(self.stack); self.setup_steps()
         
         self.lbl_global_error = QLabel(VALIDATION_MSG); self.lbl_global_error.setStyleSheet("color: #e74c3c; font-weight: bold; background-color: #2d1e1e; padding: 10px; border-radius: 4px;")

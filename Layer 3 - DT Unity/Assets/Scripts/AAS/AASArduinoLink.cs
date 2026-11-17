@@ -91,9 +91,13 @@ public class AASArduinoLink : MonoBehaviour
     // -----------------------------------------------------------------------
     private readonly object _regLock = new object();
     private readonly Dictionary<string, List<Action<bool>>> _subscribers = new();
+    private readonly Dictionary<string, bool> _lastKnownStates = new();
 
     public void Subscribe(string portId, Action<bool> callback)
     {
+        bool hasInitialState = false;
+        bool initialState = false;
+
         lock (_regLock)
         {
             if (!_subscribers.TryGetValue(portId, out var list))
@@ -103,6 +107,18 @@ public class AASArduinoLink : MonoBehaviour
             }
             if (!list.Contains(callback))
                 list.Add(callback);
+
+            if (_lastKnownStates.TryGetValue(portId, out initialState))
+            {
+                hasInitialState = true;
+            }
+        }
+
+        // Deliver initial state immediately if we already received it from M-Duino
+        if (hasInitialState)
+        {
+            Debug.Log($"[ArduinoLink] ⚡ Immediate delivery of cached initial state for Port='{portId}' -> {initialState}");
+            callback?.Invoke(initialState);
         }
     }
 
@@ -112,6 +128,22 @@ public class AASArduinoLink : MonoBehaviour
         {
             if (_subscribers.TryGetValue(portId, out var list))
                 list.Remove(callback);
+        }
+    }
+
+    public bool TryGetLastKnownState(string portId, out bool value)
+    {
+        lock (_regLock)
+        {
+            return _lastKnownStates.TryGetValue(portId, out value);
+        }
+    }
+
+    public Dictionary<string, bool> GetAllLastKnownStates()
+    {
+        lock (_regLock)
+        {
+            return new Dictionary<string, bool>(_lastKnownStates);
         }
     }
 
@@ -146,8 +178,10 @@ public class AASArduinoLink : MonoBehaviour
             _connections[key] = cs;
             Debug.Log($"[ArduinoLink] Registered connection endpoint for {key}");
             
-            if (_allowConnections)
+            // If connections are allowed or if Digital Twin mode is active, start TCP thread immediately
+            if (_allowConnections || OperationModeManager.Current == OperationMode.DigitalTwin)
             {
+                _allowConnections = true;
                 StartThread(cs);
             }
         }
@@ -302,6 +336,10 @@ public class AASArduinoLink : MonoBehaviour
                 
                 if (id != null)
                 {
+                    lock (_regLock)
+                    {
+                        _lastKnownStates[id] = val;
+                    }
                     Debug.Log($"[ArduinoLink-LOG] Enqueuing event: Port='{id}', Value={val}");
                     _queue.Enqueue((id, val));
                 }
@@ -331,6 +369,7 @@ public class AASArduinoLink : MonoBehaviour
             List<Action<bool>> callbacks;
             lock (_regLock)
             {
+                _lastKnownStates[evt.portId] = evt.value;
                 _subscribers.TryGetValue(evt.portId, out callbacks);
             }
             if (callbacks != null)

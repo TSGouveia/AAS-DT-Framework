@@ -24,7 +24,7 @@ public class ModeSelectorUI : MonoBehaviour
 
     void Awake()
     {
-        OperationModeManager.SetMode(initialMode);
+        // Initial mode is now configured globally via BaSyxManager.
     }
 
     void Start()

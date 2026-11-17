@@ -83,7 +83,8 @@ public class AASHttpDriver : IAASDriver
             {
                 if (proxy != null && proxy.binding != null && proxy.binding.pinId == pinId)
                 {
-                    return useReal ? proxy.binding.realState : proxy.binding.lastState;
+                    var b = proxy.binding;
+                    return useReal ? (b.activeLow ? !b.realState : b.realState) : b.lastState;
                 }
             }
         }

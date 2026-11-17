@@ -33,11 +33,11 @@ The architecture spans four decoupled tiers, bridging low-polygon geometric asse
   <img src="imgs/architecture_implementation.png" alt="Framework Implementation Architecture (Thesis Figure 4.2)" width="780"/>
 </p>
 
-1. **Layer 0 - Physical Asset Digitization (Blender):** Modeling lightweight 3D assets with proper origin points, metric scale, and kinematic hierarchy.
-2. **Layer 1 - No-Code Semantic Authoring (AAS Client / Python):** Studio GUI (`conveyor_wizard.py`) for 3D raycasting asset placement, I/O pin mapping, visual control logic authoring, and packaging into standardized `.aasx` containers.
+1. **Layer 0 - Physical Asset Digitization (Blender):** Modeling lightweight 3D assets to scale, with movable parts separated, origin points aligned with their axes of motion, and trigger volumes at the sensor locations.
+2. **Layer 1 - No-Code Semantic Authoring (AAS Client / Python):** Studio GUI (`conveyor_wizard.py`) for asset placement, binding of sensor and actuator pins to model nodes, I/O pin mapping, visual control logic authoring, and packaging into standardized `.aasx` containers.
 3. **Layer 2 - Containerized AAS Storage & Discovery (Docker & BaSyx v2):** Eclipse BaSyx microservices hosting Submodel Registries, AAS Servers, MQTT Broker (Mosquitto), and Time-Series DB (InfluxDB).
 4. **Layer 3 - Procedural Simulation & Live Sync (Unity 3D Engine):** Procedural scene assembly from BaSyx AAS models, physics-based kinematic simulation, dual-mode execution (Virtual Commissioning / Live Telemetry Sync), and sensor drift correction.
-5. **Physical Hardware & Firmware (M-DUINO PLC):** Industrial Shields PLC running FreeRTOS for low-latency 5 ms input scanning, optocoupled galvanic isolation, dual-channel TCP telemetry socket, and HTTP actuation.
+5. **Physical Hardware & Firmware (M-DUINO PLC):** Industrial Shields PLC running FreeRTOS with event-driven input scanning (one scan per scheduler tick, about 15 ms), optocoupled galvanic isolation, a TCP telemetry socket (port 8888), and an HTTP server for skill commands (port 80).
 
 ---
 
@@ -80,7 +80,7 @@ Follow these steps to start the middleware services, author or deploy digital tw
 1. **Start the AAS Middleware (Layer 2)**
    - Ensure Docker Desktop is running on your machine.
    - Start the containerized services located in the `Layer 2 - AAS Docker` directory.
-   - This launches the Eclipse BaSyx v2 microservices (AAS Registry, Submodel Registry, and AAS Environment Server) alongside Mosquitto MQTT and InfluxDB for telemetry storage.
+   - This launches the Eclipse BaSyx v2 microservices (AAS Registry, Submodel Registry, and AAS Environment Server) alongside the Mosquitto MQTT and InfluxDB services of the standard BaSyx stack. These are not on the telemetry path: live sensor data travels directly from the PLC to Unity.
 
 2. **Launch the Authoring Studio (Layer 1)**
    - Open the `Layer 1 - AAS Client` folder and install the Python dependencies listed in `requirements.txt`.
@@ -106,8 +106,8 @@ Follow these steps to start the middleware services, author or deploy digital tw
 Once the containers and simulation runtime are active, the platform supports two operational modes:
 
 - **Virtual Commissioning (VC):** Operates entirely disconnected from physical hardware. Machine actuation, routing sequences, and sensor responses are driven by the local rule engine evaluating the `ControlLogic` submodel abstract syntax trees.
-- **Live Telemetry Synchronization:** In operational mode, the Unity runtime establishes a dedicated TCP connection to the M-DUINO PLC (port 8888). Real-time optical and inductive sensor events update the virtual state.
-- **Sensor Drift Correction:** When physical workpieces trigger physical track sensors, the simulation automatically snaps the nearest virtual workpiece to calibrated coordinates, eliminating accumulated PhysX numerical drift.
+- **Live Telemetry Synchronization (Digital Twin):** The Unity runtime establishes a dedicated TCP connection to the M-DUINO PLC (port 8888). Magnetic sensor and limit-switch events update the virtual state, and the same `ControlLogic` sequences send skill requests to the PLC over HTTP (port 80), which executes them on the real bench.
+- **Sensor Drift Correction:** At startup, the twin is aligned with the state reported by the PLC. During operation, whenever a transfer sequence waits for a sensor and the sensor confirms the workpiece, the virtual workpiece is snapped to the sensor position, so PhysX numerical drift is reset at every station.
 
 
 ---
@@ -115,9 +115,9 @@ Once the containers and simulation runtime are active, the platform supports two
 ## <div align="center">Key Results & Performance</div>
 
 Empirical evaluation on the physical modular FMS bench and 800 parametric stress-testing runs revealed:
-- **Cold-boot instantiation** of the physical pilot bench in under **2.8s**.
-- **Steady-state rendering rates** exceeding **480 FPS** for small to medium layouts.
-- **Scalability:** Near-linear scaling up to 250 modules and stable real-time execution up to 500 modules (>90 FPS).
+- **Cold-boot instantiation** of the physical pilot bench in **2.79 s** on average.
+- **Steady-state rendering** at about **490 FPS** on the pilot bench, and above **250 FPS** up to 250 modules.
+- **Scalability:** Stable real-time execution up to 250 modules, and mean frame rates above 60 FPS up to 500 modules (93 FPS).
 
 ---
 

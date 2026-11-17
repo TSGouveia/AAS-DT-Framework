@@ -292,13 +292,6 @@ public class AASActuatorController : MonoBehaviour
 
     private void StartDTConnection()
     {
-        if (OperationModeManager.Current == OperationMode.DigitalTwin && !BaSyxManager.IsStartupComplete)
-        {
-            Debug.Log($"[Actuator] ⏳ DT Connection for '{gameObject.name}' delayed until BaSyxManager startup is complete.");
-            StartCoroutine(WaitAndStartDTConnection());
-            return;
-        }
-
         string proto = (_kitProtocol ?? "tcp").ToLower().Trim();
         if (proto != "tcp" && proto != "socket" && proto != "sockets" && proto != "none") return;
 

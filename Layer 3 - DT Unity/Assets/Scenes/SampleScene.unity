@@ -1536,6 +1536,7 @@ MonoBehaviour:
   warningPanel: {fileID: 433136813}
   warningTextTMP: {fileID: 1226185697}
   startupTimeTMP: {fileID: 0}
+  initialOperationMode: 1
   globalScale: 1
   discoveryInterval: 2
   positionSyncInterval: 0.5

@@ -27,6 +27,10 @@ public class BaSyxManager : MonoBehaviour
     public TextMeshProUGUI warningTextTMP;
     public TextMeshProUGUI startupTimeTMP;
 
+    [Header("Operation Mode")]
+    [Tooltip("Initial operation mode: VirtualCommissioning or DigitalTwin")]
+    public OperationMode initialOperationMode = OperationMode.VirtualCommissioning;
+
     [Header("Settings")]
     public float globalScale = 1.0f;
     public float discoveryInterval = 2f;
@@ -74,6 +78,8 @@ public class BaSyxManager : MonoBehaviour
 
     void Awake()
     {
+        OperationModeManager.SetMode(initialOperationMode);
+
         startupStopwatch = System.Diagnostics.Stopwatch.StartNew();
         startupRealtimeSinceStartup = Time.realtimeSinceStartup;
         Debug.Log($"[StartupTimer] ⏱️ BaSyxManager.Awake iniciado aos {startupRealtimeSinceStartup:F4}s desde o arranque do Unity!");
@@ -206,8 +212,18 @@ public class BaSyxManager : MonoBehaviour
                 Debug.Log("[BaSyx] ⚡ Conexão Socket ao hardware estabelecida com sucesso!");
             }
 
-            // Wait 4 seconds for snaps and initial sensor synchronization to finish
-            yield return new WaitForSeconds(4.0f);
+            // Wait 1.5 seconds for Arduino telemetry burst (all 18 ports) to arrive
+            yield return new WaitForSeconds(1.5f);
+
+            Debug.Log("[BaSyx] 🎯 Executing Initial Calibration across all kits based on AAS definitions and real hardware sensor states...");
+            var allSensors = FindObjectsByType<AASSensorController>(FindObjectsSortMode.None);
+            foreach (var s in allSensors)
+            {
+                s.PerformInitialCalibration();
+            }
+
+            // Wait 2.5 seconds for workpiece snaps and PhysX stabilization to settle
+            yield return new WaitForSeconds(2.5f);
             
             Debug.Log("[BaSyx] 🚀 Startup delay over: Initializing AAS Rule Engines in Digital Twin mode.");
             foreach (var p in pendingRules)
